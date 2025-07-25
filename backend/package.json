@@ -1,0 +1,26 @@
+{
+  "name": "doc_management_backend",
+  "version": "1.0.0",
+  "description": "\"Fullstack Document Management System with RAG-based Q&A Built with Node.js (Express), React, PostgreSQL, and Python-based embedding service.\"",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.25"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "author": "Dhawanit Bhatnagar",
+  "license": "MIT"
+}
