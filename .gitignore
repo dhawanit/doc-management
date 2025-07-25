@@ -1,0 +1,20 @@
+# 📁 Node.js (backend)
+backend/node_modules/
+backend/.env
+backend/dist/
+
+# 🚀 System
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs/editors
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
