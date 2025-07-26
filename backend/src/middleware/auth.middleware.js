@@ -3,6 +3,7 @@ import { UserRepository } from '../modules/user/user.repository.js';
 
 export async function authMiddleware(req, res, next) {
   const authHeader = req.headers['authorization'];
+  console.log(authHeader);
   const token = authHeader?.split(' ')[1];
 
   if (!token) return res.status(401).json({ message: 'Missing token' });
@@ -10,6 +11,7 @@ export async function authMiddleware(req, res, next) {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     const user = await UserRepository.findOneBy({ id: payload.id });
+    console.log(user);
 
     if (!user || user.sessionToken !== payload.sessionToken) {
       return res.status(403).json({ message: 'Session invalidated' });
@@ -21,7 +23,7 @@ export async function authMiddleware(req, res, next) {
     if (Date.now() - lastSeen > TEN_MINUTES) {
       user.sessionToken = null;
       await UserRepository.save(user);
-      return res.status(440).json({ message: 'Session expired due to inactivity' });
+      return res.status(401).json({ message: 'Session expired due to inactivity' });
     }
 
     user.lastActiveAt = new Date();
@@ -33,3 +35,4 @@ export async function authMiddleware(req, res, next) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 }
+
