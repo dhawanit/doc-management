@@ -1,7 +1,6 @@
 import { DocumentRepository } from './document.repository.js';
-import { AppDataSource } from '../../config/data-source.js';
+import fs from 'fs';
 import path from 'path';
-import { Document } from './document.entity.js';
 
 
 export const uploadDocument = async (req, res) => {
@@ -76,6 +75,71 @@ export const listDocuments = async (req, res) => {
     return res.status(200).json({ documents: formatted });
   } catch (err) {
     console.error('[listDocuments] Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const downloadDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const doc = await DocumentRepository.findOne({
+      where: { id: parseInt(id, 10) },
+      relations: ['uploadedBy']
+    });
+
+    if (!doc) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+
+    // Authorization: Only uploader or admin
+    if (user.role !== 'admin' && doc.uploadedBy.id !== user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const filePath = path.resolve(doc.filePath);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File missing on server' });
+    }
+
+    res.download(filePath, path.basename(filePath));
+  } catch (err) {
+    console.error('[downloadDocument] Error:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const deleteDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const doc = await DocumentRepository.findOne({
+      where: { id: parseInt(id, 10) },
+      relations: ['uploadedBy']
+    });
+
+    if (!doc) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+
+    if (user.role !== 'admin' && doc.uploadedBy.id !== user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this document' });
+    }
+
+    // Remove file from storage
+    if (fs.existsSync(doc.filePath)) {
+      fs.unlinkSync(doc.filePath);
+    }
+
+    // Remove DB entry
+    await DocumentRepository.remove(doc);
+
+    return res.status(200).json({ message: 'Document deleted successfully' });
+  } catch (err) {
+    console.error('[deleteDocument] Error:', err);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
