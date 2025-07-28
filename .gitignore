@@ -1,9 +1,17 @@
-# 📁 Node.js (backend)
+# Node.js (backend)
 backend/node_modules/
 backend/.env
 backend/dist/
+backend/coverage/
 
-# 🚀 System
+# React (frontend)
+frontend/node_modules/
+frontend/.env
+frontend/build/
+frontend/.cache/
+frontend/coverage/
+
+# System
 .DS_Store
 Thumbs.db
 *.log
@@ -14,6 +22,8 @@ yarn-error.log*
 # IDEs/editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Secrets
 .env
