@@ -5,6 +5,7 @@ import path from 'path';
 import { AppDataSource } from '../../config/data-source.js';
 import { Document } from './document.entity.js';
 import { DocumentVersion } from './documentVersion.entity.js';
+import { createNotification } from '../notification/notification.controller.js';
 
 
 export const uploadDocument = async (req, res) => {
@@ -27,6 +28,8 @@ export const uploadDocument = async (req, res) => {
     });
 
     const savedDoc = await DocumentRepository.save(newDoc);
+
+    await createNotification(user, `Your document "${title}" was uploaded successfully.`);
 
     return res.status(201).json({
       message: 'File uploaded successfully',
@@ -285,7 +288,7 @@ export const uploadNewVersion = async (req, res) => {
     });
 
     await versionRepo.save(newVersion);
-
+    await createNotification(user, `A new version of document "${doc.title}" has been uploaded.`);
     return res.status(201).json({
       message: 'New version uploaded',
       version: {
